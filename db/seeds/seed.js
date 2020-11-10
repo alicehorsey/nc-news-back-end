@@ -22,11 +22,13 @@ exports.seed = function (knex) {
     })
     .then((articleRows) => {
       console.log(`inserted ${articleRows.length} articles`);
+
       const articleRef = createArticleRef(articleRows)
       const formattedCommentsData = formatCommentData(data.commentData, articleRef)
       return knex.insert(formattedCommentsData).into('comments').returning('*');
     })
     .then((commentRows) => {
       console.log(`inserted ${commentRows.length} comments`);
+
     })
 };
