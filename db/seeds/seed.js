@@ -12,23 +12,23 @@ exports.seed = function (knex) {
       return knex.insert(data.topicData).into('topics').returning('*');
     })
     .then((topicRows) => {
-      console.log(`inserted ${topicRows.length} topics`);
+      // console.log(`inserted ${topicRows.length} topics`);
       return knex.insert(data.userData).into('users').returning('*');
     })
     .then((userRows) => {
-      console.log(`inserted ${userRows.length} users`);
+      // console.log(`inserted ${userRows.length} users`);
       const formattedArticleData = formatArticleData(data.articleData)
       return knex.insert(formattedArticleData).into('articles').returning('*');
     })
     .then((articleRows) => {
-      console.log(`inserted ${articleRows.length} articles`);
+      // console.log(`inserted ${articleRows.length} articles`);
 
       const articleRef = createArticleRef(articleRows)
       const formattedCommentsData = formatCommentData(data.commentData, articleRef)
       return knex.insert(formattedCommentsData).into('comments').returning('*');
     })
     .then((commentRows) => {
-      console.log(`inserted ${commentRows.length} comments`);
-
+      // console.log(`inserted ${commentRows.length} comments`);
+      // console.log(commentRows)
     })
 };
