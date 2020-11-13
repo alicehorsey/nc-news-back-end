@@ -51,7 +51,7 @@ const updateArticleVotes = (id, num = 0) => {
             if (updatedArticle.length === 0) {
                 return Promise.reject({ status: 404, msg: "Article Id Not Found" })
             }
-            return { updatedArticle }
+            return { updatedArticle: updatedArticle[0] }//updated this
         })
 }
 

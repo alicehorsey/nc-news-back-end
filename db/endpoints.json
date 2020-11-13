@@ -144,7 +144,7 @@
         "DELETE /api/comments/:comment_id": {
             "description": "deletes the given comment by comment_id",
             "queries": [],
-            "exampleResponse": "No content returned"
+            "exampleResponse": "No content"
         },
         "GET /api/comments": {
             "description": "serves an array of all comments",
