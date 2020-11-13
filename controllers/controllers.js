@@ -1,4 +1,4 @@
-const { updateCommentVotes, updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, deleteCommentById, fetchComments } = require("../models/models")
+const { updateCommentVotes, updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, deleteCommentById, fetchComments, fetchAllEndpoints } = require("../models/models")
 
 const getTopics = (req, res, next) => {
     fetchTopics().then((topics) => {
@@ -74,11 +74,23 @@ const removeCommentById = (req, res, next) => {
         res.sendStatus(204)
     }).catch(next)
 }
+
 const getComments = (req, res, next) => {
     fetchComments().then((comments) => {
         res.status(200).send(comments);
     })
 }
 
+const getAllEndpoints = (req, res, next) => {
+    fetchAllEndpoints((error, endpoints) => {
+        if (error) {
+            res.status(404).send({ msg: "Not Found" });
+        } else {
+            res.status(200).send(endpoints)
+        }
+    })
+}
 
-module.exports = { removeCommentById, updateCommentById, getTopics, getArticles, getCommentByArtId, getUsersByName, getArticleById, updateArticleById, addComment, getComments }
+
+
+module.exports = { getAllEndpoints, removeCommentById, updateCommentById, getTopics, getArticles, getCommentByArtId, getUsersByName, getArticleById, updateArticleById, addComment, getComments }

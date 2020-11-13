@@ -104,9 +104,9 @@ describe("testing the app", () => {
             return request(app)
                 .get('/api/articles/1')
                 .expect(200)
-                .then(({ body: { article } }) => {
-                    expect(Object.keys(article)).toEqual(expect.arrayContaining(['article_id', 'title', 'body', 'votes', 'topic', 'author', 'created_at', 'comment_count']))
-                    expect(article.comment_count).toBe(13)
+                .then(({ body }) => {
+                    expect(Object.keys(body.article)).toEqual(expect.arrayContaining(['article_id', 'title', 'body', 'votes', 'topic', 'author', 'created_at', 'comment_count']))
+                    expect(body.article.comment_count).toBe(13)
                 })
         })
         test("GET status 404 when given a non existent article id parametric endpoint", () => {
@@ -130,8 +130,8 @@ describe("testing the app", () => {
                 .patch('/api/articles/1')
                 .send({ inc_votes: 15 })
                 .expect(200)
-                .then(({ body: { updatedArticle } }) => {
-                    expect(updatedArticle[0].votes).toBe(115)
+                .then(({ body }) => {
+                    expect(body.updatedArticle[0].votes).toBe(115)
                 })
         })
         test("PATCH status 200 decrementing votes by given number for certain id, returning an updatedArticle object", () => {
@@ -235,9 +235,9 @@ describe("testing the app", () => {
             return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
-                .then(({ body: { commentsByArticleId } }) => {
-                    expect(Array.isArray(commentsByArticleId)).toBe(true)
-                    expect(Object.keys(commentsByArticleId[0])).toEqual(['comment_id', 'author', 'votes', 'created_at', 'body'])
+                .then(({ body }) => {
+                    expect(Array.isArray(body.commentsByArticleId)).toBe(true)
+                    expect(Object.keys(body.commentsByArticleId[0])).toEqual(['comment_id', 'author', 'votes', 'created_at', 'body'])
                 })
         })
         test("GET status 200 returns all the comments with the given article id sorted by query column ", () => {
@@ -484,8 +484,8 @@ describe("testing the app", () => {
         test("Checking the comment has been successfully deleted by accessing a api/comments endpoint to get all comments before and after DELETE request has been made", () => {
             return request(app)
                 .get("/api/comments")
-                .then(({ body: { comments } }) => {
-                    // console.log(comments.length)//<---- length 18
+                .then(({ body }) => {
+                    // console.log(body.comments.length)//<---- length 18
                     return request(app)
                         .delete("/api/comments/1")
                         .then(() => {
@@ -508,6 +508,51 @@ describe("testing the app", () => {
                     })
             })
             return Promise.all(requestPromises)
+        })
+    })
+
+    describe("GET /api", () => {
+        test("Responds with a JSON describing all the available endpoints on the API", () => {
+
+            return request(app)
+                .get("/api")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(Object.keys(body.endpoints)).toEqual([
+                        'GET /api',
+                        'GET /api/topics',
+                        'GET /api/users/:username',
+                        'GET /api/articles/:article_id',
+                        'PATCH /api/articles/:article_id',
+                        'POST /api/articles/:article_id/comments',
+                        'GET /api/articles/:article_id/comments',
+                        'GET /api/articles',
+                        'PATCH /api/comments/:comment_id',
+                        'DELETE /api/comments/:comment_id',
+                        'GET /api/comments'
+                    ])
+
+                })
+        })
+        test("GET status 405 when method is not allowed", () => {
+            const invalidMethods = ["post", "patch", "delete", "put"]
+            const requestPromises = invalidMethods.map((method) => {
+                return request(app)
+                [method]('/api/')
+                    .expect(405)
+                    .then(({ body }) => {
+                        expect(body.msg).toBe("Invalid Method")
+                    })
+            })
+            return Promise.all(requestPromises)
+        })
+        test("GET status 404 Not Found when path is typed incorrectly", () => {
+            return request(app)
+                .get('/aPpi/')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe("Not Found")
+                })
         })
     })
 })

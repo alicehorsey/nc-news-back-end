@@ -1,4 +1,5 @@
-const connection = require("../db/connection")
+const connection = require("../db/connection");
+const fs = require("fs");
 
 
 const fetchTopics = () => {
@@ -122,7 +123,6 @@ const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic) 
         })
 }
 
-
 const updateCommentVotes = (id, num) => {
     return connection('comments')
         .where("comment_id", "=", id)
@@ -150,8 +150,6 @@ const deleteCommentById = (id) => {
         })
 }
 
-
-
 const fetchComments = () => {
     return connection
         .select('*')
@@ -161,7 +159,14 @@ const fetchComments = () => {
         })
 }
 
+const fetchAllEndpoints = (cb) => {
+    fs.readFile("./db/endpoints.json", "utf8", (error, endpoints) => {
+        if (error) cb(error)
+        else {
+            cb(null, JSON.parse(endpoints))
+        }
+    })
+}
 
 
-
-module.exports = { updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, updateCommentVotes, deleteCommentById, fetchComments }
+module.exports = { fetchAllEndpoints, updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, updateCommentVotes, deleteCommentById, fetchComments }
