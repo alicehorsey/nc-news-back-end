@@ -3,6 +3,7 @@ const app = require("../app")
 const request = require("supertest");
 const { response } = require("../app");
 const { TestScheduler } = require("jest");
+const { update } = require("../db/connection");
 
 
 describe("testing the app", () => {
@@ -67,13 +68,13 @@ describe("testing the app", () => {
 
     })
 
-    describe("/users", () => {
+    describe("/users/:username", () => {
         test("GET status 200 when given a valid username parametric endpoint", () => {
             return request(app)
                 .get('/api/users/rogersop')
                 .expect(200)
                 .then(response => {
-                    expect(Object.keys(response.body.user[0])).toEqual(expect.arrayContaining(['username', 'avatar_url', 'name']))
+                    expect(Object.keys(response.body.user)).toEqual(expect.arrayContaining(['username', 'avatar_url', 'name']))
                 })
         })
         test("GET status 404 when given a non existent username parametric endpoint", () => {
@@ -131,7 +132,7 @@ describe("testing the app", () => {
                 .send({ inc_votes: 15 })
                 .expect(200)
                 .then(({ body: { updatedArticle } }) => {
-                    expect(updatedArticle[0].votes).toBe(115)
+                    expect(updatedArticle.votes).toBe(115)
                 })
         })
         test("PATCH status 200 decrementing votes by given number for certain id, returning an updatedArticle object", () => {
@@ -140,7 +141,7 @@ describe("testing the app", () => {
                 .send({ inc_votes: -100 })
                 .expect(200)
                 .then(({ body: { updatedArticle } }) => {
-                    expect(updatedArticle[0].votes).toBe(0)
+                    expect(updatedArticle.votes).toBe(0)
                 })
         })
         test("PATCH status 400 error when given a non existent article id and valid vote number", () => {
@@ -363,6 +364,14 @@ describe("testing the app", () => {
                     expect(allTopicsCats).toBe(true)
                 })
         })
+        test("GET status 404 if topic in query does not exist", () => {
+            return request(app)
+                .get('/api/articles?topic=doesnotexist')
+                .expect(404)
+                .then(({ body: { msg } }) => {
+                    expect(msg).toBe("Topic Not Found")
+                })
+        })
         test("GET status 200 returns array with number of articles defaulting to 10", () => {
             return request(app)
                 .get('/api/articles/')
@@ -379,12 +388,20 @@ describe("testing the app", () => {
                     expect(articles.length).toBe(5)
                 })
         })
-        test("Accepts a query p which specifies the page at while to start", () => {
+        test("Accepts a query p which specifies the page at which to start - page 1", () => {
             return request(app)
                 .get('/api/articles?p=1')
                 .expect(200)
                 .then(({ body: { articles } }) => {
-                    console.log(articles)
+                    expect(articles[0].article_id).toBe(1) //to prove starts at beginning for page 1
+                })
+        })
+        test("Accepts a query p which specifies the page at which to start - page 2", () => {
+            return request(app)
+                .get('/api/articles?p=2')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].article_id).toBe(11)
                 })
         })
         test("GET status 404 when column given as query to sort by does not exist", () => {
@@ -425,8 +442,9 @@ describe("testing the app", () => {
                 .send({ inc_votes: 10 })
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body.updatedComment[0].votes).toBe(26)
-                    expect(Object.keys(body.updatedComment[0])).toEqual(["comment_id", "author", "article_id", "votes", "created_at", "body"])
+
+                    expect(body.updatedComment.votes).toBe(26)
+                    expect(Object.keys(body.updatedComment)).toEqual(["comment_id", "author", "article_id", "votes", "created_at", "body"])
                 })
         })
         test("PATCH status 200 decreasing votes by given number for certain id, returning an updatedComment object", () => {
@@ -435,8 +453,8 @@ describe("testing the app", () => {
                 .send({ inc_votes: -10 })
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body.updatedComment[0].votes).toBe(6)
-                    expect(Object.keys(body.updatedComment[0])).toEqual(["comment_id", "author", "article_id", "votes", "created_at", "body"])
+                    expect(body.updatedComment.votes).toBe(6)
+                    expect(Object.keys(body.updatedComment)).toEqual(["comment_id", "author", "article_id", "votes", "created_at", "body"])
                 })
         })
         test("PATCH status 404 Not Found when comment id does not exist in database", () => {

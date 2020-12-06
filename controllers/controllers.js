@@ -1,4 +1,4 @@
-const { updateCommentVotes, updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, deleteCommentById, fetchComments, fetchAllEndpoints } = require("../models/models")
+const { checkTopicExists, updateCommentVotes, updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, deleteCommentById, fetchComments, fetchAllEndpoints } = require("../models/models")
 
 const getTopics = (req, res, next) => {
     fetchTopics().then((topics) => {
@@ -12,7 +12,7 @@ const getUsersByName = (req, res, next) => {
         if (userByName.user.length === 0) {
             return Promise.reject({ status: 404, msg: "Not Found" })
         } else {
-            res.status(200).send(userByName)
+            res.status(200).send({ user: userByName.user[0] })
         }
     }).catch(next)
 }
@@ -51,15 +51,27 @@ const getCommentByArtId = (req, res, next) => {
 }
 
 const getArticles = (req, res, next) => {
+
     const sortBy = req.query.sort_by
     const order = req.query.order
     const author = req.query.author
     const topic = req.query.topic
     const limit = req.query.limit
     const p = req.query.p
-    fetchAllArticles(sortBy, order, author, topic, limit, p).then((articles) => {
-        res.status(200).send(articles)
-    }).catch(next)
+
+    if (topic) {
+        checkTopicExists(topic).then(result => {
+            if (!result) return Promise.reject({ status: 404, msg: "Topic Not Found" });
+            fetchAllArticles(sortBy, order, author, topic, limit, p).then((articles) => {
+                res.status(200).send(articles)
+            }).catch(next)
+        }).catch(next)
+    } else {
+        fetchAllArticles(sortBy, order, author, topic, limit, p).then((articles) => {
+            res.status(200).send(articles)
+        }).catch(next)
+    }
+
 }
 
 const updateCommentById = (req, res, next) => {

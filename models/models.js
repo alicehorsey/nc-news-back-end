@@ -51,7 +51,7 @@ const updateArticleVotes = (id, num = 0) => {
             if (updatedArticle.length === 0) {
                 return Promise.reject({ status: 404, msg: "Article Id Not Found" })
             }
-            return { updatedArticle: updatedArticle }//updated this
+            return { updatedArticle: updatedArticle[0] }//updated this
         })
 }
 
@@ -97,20 +97,24 @@ const fetchCommentByArtId = (artId, sortBy = "created_at", order = "desc") => {
 
 
 const checkTopicExists = (topic) => {
+
+
     return connection
         .select('*')
         .from("articles")
         .where("topic", "=", topic)
         .then((topics) => {
-            if (topics.length === 0) return false;
-            else return true;
+
+            if (topics.length === 0) {
+                return false;
+            } else {
+                return true;
+            }
         })
 }
-// this model needs to be accessed from controller
 
 const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic, limit = 10, p = 1) => {
     const offset = limit * (p - 1)
-
 
     //Need another model function to check the db for the total count which will not take into consideration the limit 
 
@@ -131,6 +135,7 @@ const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic, 
             }
         })
         .then(articlesRows => {
+
             if (!articlesRows.length) {
                 return Promise.reject({ status: 404, msg: "Author Not Found" })
             }
@@ -153,7 +158,7 @@ const updateCommentVotes = (id, num) => {
                 return Promise.reject({ status: 404, msg: "Comment Id Not Found" })
 
             }
-            return { updatedComment }
+            return { updatedComment: updatedComment[0] }
         })
 }
 
@@ -189,4 +194,4 @@ const fetchAllEndpoints = (cb) => {
 }
 
 
-module.exports = { fetchAllEndpoints, updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, updateCommentVotes, deleteCommentById, fetchComments }
+module.exports = { checkTopicExists, fetchAllEndpoints, updateArticleVotes, fetchAllArticles, fetchCommentByArtId, fetchTopics, fetchUserByName, fetchArticleById, createComment, updateCommentVotes, deleteCommentById, fetchComments }
