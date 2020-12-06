@@ -51,7 +51,7 @@ const updateArticleVotes = (id, num = 0) => {
             if (updatedArticle.length === 0) {
                 return Promise.reject({ status: 404, msg: "Article Id Not Found" })
             }
-            return { updatedArticle: updatedArticle[0] }//updated this
+            return { updatedArticle: updatedArticle }//updated this
         })
 }
 
@@ -95,7 +95,25 @@ const fetchCommentByArtId = (artId, sortBy = "created_at", order = "desc") => {
         })
 }
 
-const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic) => {
+
+const checkTopicExists = (topic) => {
+    return connection
+        .select('*')
+        .from("articles")
+        .where("topic", "=", topic)
+        .then((topics) => {
+            if (topics.length === 0) return false;
+            else return true;
+        })
+}
+// this model needs to be accessed from controller
+
+const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic, limit = 10, p = 1) => {
+    const offset = limit * (p - 1)
+
+
+    //Need another model function to check the db for the total count which will not take into consideration the limit 
+
     return connection
         .select("articles.*")
         .count('comment_id AS comment_count')
@@ -103,6 +121,7 @@ const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic) 
         .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
         .groupBy('articles.article_id')
         .orderBy(sortBy, order)
+        .limit(limit).offset(offset)
         .modify((query) => {
             if (author) {
                 query.where('articles.author', '=', author)
@@ -122,6 +141,7 @@ const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic) 
             return { articles: editedArticles }
         })
 }
+
 
 const updateCommentVotes = (id, num) => {
     return connection('comments')

@@ -130,8 +130,8 @@ describe("testing the app", () => {
                 .patch('/api/articles/1')
                 .send({ inc_votes: 15 })
                 .expect(200)
-                .then(({ body }) => {
-                    expect(body.updatedArticle[0].votes).toBe(115)
+                .then(({ body: { updatedArticle } }) => {
+                    expect(updatedArticle[0].votes).toBe(115)
                 })
         })
         test("PATCH status 200 decrementing votes by given number for certain id, returning an updatedArticle object", () => {
@@ -184,7 +184,7 @@ describe("testing the app", () => {
         })
     })
 
-    describe("POST /api/articles/:article_id/comments", () => {
+    describe("/api/articles/:article_id/comments", () => {
         test("POST status 201 returns the posted comment", () => {
             return request(app)
                 .post('/api/articles/2/comments')
@@ -303,7 +303,7 @@ describe("testing the app", () => {
         })
     })
 
-    describe("GET /api/articles", () => {
+    describe("/api/articles", () => {
         test("GET status 200 returns array of articles with comment count property", () => {
             return request(app)
                 .get('/api/articles')
@@ -363,6 +363,30 @@ describe("testing the app", () => {
                     expect(allTopicsCats).toBe(true)
                 })
         })
+        test("GET status 200 returns array with number of articles defaulting to 10", () => {
+            return request(app)
+                .get('/api/articles/')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles.length).toBe(10)
+                })
+        })
+        test("GET status 200 returns array with number of articles according to queried limit", () => {
+            return request(app)
+                .get('/api/articles?limit=5')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles.length).toBe(5)
+                })
+        })
+        test("Accepts a query p which specifies the page at while to start", () => {
+            return request(app)
+                .get('/api/articles?p=1')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    console.log(articles)
+                })
+        })
         test("GET status 404 when column given as query to sort by does not exist", () => {
             return request(app)
                 .get('/api/articles?sort_by=publisher')
@@ -393,7 +417,7 @@ describe("testing the app", () => {
         })
     })
 
-    describe("PATCH /api/comments/:comment_id", () => {
+    describe("/api/comments/:comment_id", () => {
 
         test("PATCH status 200 incrementing votes by given number for certain id, returning an updatedComment object", () => {
             return request(app)
@@ -456,7 +480,7 @@ describe("testing the app", () => {
         })
     })
 
-    describe("DELETE /api/comments/:comment_id", () => {
+    describe("/api/comments/:comment_id", () => {
         test("DELETE status 204 and no content returned when comment given in parametric endpoint is successfully deleted", () => {
             return request(app)
                 .delete("/api/comments/5")
@@ -511,7 +535,7 @@ describe("testing the app", () => {
         })
     })
 
-    describe("GET /api", () => {
+    describe("/api", () => {
         test("Responds with a JSON describing all the available endpoints on the API", () => {
 
             return request(app)

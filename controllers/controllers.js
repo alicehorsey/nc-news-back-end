@@ -55,7 +55,9 @@ const getArticles = (req, res, next) => {
     const order = req.query.order
     const author = req.query.author
     const topic = req.query.topic
-    fetchAllArticles(sortBy, order, author, topic).then((articles) => {
+    const limit = req.query.limit
+    const p = req.query.p
+    fetchAllArticles(sortBy, order, author, topic, limit, p).then((articles) => {
         res.status(200).send(articles)
     }).catch(next)
 }
