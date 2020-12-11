@@ -322,7 +322,7 @@ describe("testing the app", () => {
                     expect(articles).toBeSortedBy("created_at", { coerce: true })
                 })
         })
-        test("GET status 200 returns array of articles sorted by column given in query", () => {
+        test("GET status 200 returns array of articles sorted by column author given in query", () => {
             return request(app)
                 .get('/api/articles?sort_by=author')
                 .expect(200)
@@ -330,6 +330,39 @@ describe("testing the app", () => {
                     expect(articles).toBeSortedBy("author", { coerce: true })
                 })
         })
+        test("GET status 200 returns array of articles sorted by column votes given in query", () => {
+            return request(app)
+                .get('/api/articles?sort_by=votes')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles).toBeSortedBy("votes", { descending: true, coerce: true })
+                })
+        })
+        test("GET status 200 returns array of articles sorted by column votes given in query", () => {
+            return request(app)
+                .get('/api/articles?sort_by=votes&order=asc')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles).toBeSortedBy("votes", { descending: false, coerce: true })
+                })
+        })
+        test("GET status 200 returns array of articles sorted by column comment_count given in query", () => {
+            return request(app)
+                .get('/api/articles?sort_by=comment_count')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles).toBeSortedBy("comment_count", { descending: true, coerce: true })
+                })
+        })
+        test("GET status 200 returns array of articles sorted by column comment_count given in query", () => {
+            return request(app)
+                .get('/api/articles?sort_by=comment_count&order=asc')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles).toBeSortedBy("comment_count", { descending: false, coerce: true })
+                })
+        })
+
         test("GET status 200 returns array of articles in descending order by default", () => {
             return request(app)
                 .get('/api/articles')

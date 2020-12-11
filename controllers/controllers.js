@@ -51,23 +51,24 @@ const getCommentByArtId = (req, res, next) => {
 }
 
 const getArticles = (req, res, next) => {
-
     const sortBy = req.query.sort_by
     const order = req.query.order
     const author = req.query.author
     const topic = req.query.topic
+    const votes = req.query.votes
     const limit = req.query.limit
+    const comment_count = req.query.comment_count
     const p = req.query.p
 
     if (topic) {
         checkTopicExists(topic).then(result => {
             if (!result) return Promise.reject({ status: 404, msg: "Topic Not Found" });
-            fetchAllArticles(sortBy, order, author, topic, limit, p).then((articles) => {
+            fetchAllArticles(sortBy, order, author, topic, votes, comment_count, limit, p).then((articles) => {
                 res.status(200).send(articles)
             }).catch(next)
         }).catch(next)
     } else {
-        fetchAllArticles(sortBy, order, author, topic, limit, p).then((articles) => {
+        fetchAllArticles(sortBy, order, author, topic, votes, comment_count, limit, p).then((articles) => {
             res.status(200).send(articles)
         }).catch(next)
     }

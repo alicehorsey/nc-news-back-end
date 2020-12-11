@@ -113,7 +113,8 @@ const checkTopicExists = (topic) => {
         })
 }
 
-const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic, limit = 10, p = 1) => {
+const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic, votes, comment_count, limit = 10, p = 1) => {
+
     const offset = limit * (p - 1)
 
     //Need another model function to check the db for the total count which will not take into consideration the limit 
@@ -132,6 +133,12 @@ const fetchAllArticles = (sortBy = "created_at", order = "desc", author, topic, 
             }
             if (topic) {
                 query.where('articles.topic', '=', topic)
+            }
+            if (votes) {
+                query.where('articles.votes', '=', votes)
+            }
+            if (comment_count) {
+                query.where('articles.comment_count', '=', comment_count)
             }
         })
         .then(articlesRows => {
