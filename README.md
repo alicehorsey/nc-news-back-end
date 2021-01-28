@@ -15,42 +15,42 @@ Please fork and clone from my GitHub repository and run `npm install` to install
 
 You will need to create a `knexfile.js` file at the root of the project. Here is an example of what this might look like.
 
-`const ENV = process.env.NODE_ENV || 'development';
-const { DB_URL } = process.env;
+`const ENV = process.env.NODE_ENV || 'development';`
+`const { DB_URL } = process.env;`
 
-const baseConfig = {
-  client: 'pg',
-  migrations: {
-    directory: './db/migrations'
-  },
-  seeds: {
-    directory: './db/seeds'
-  }
-};
+`const baseConfig = {`
+  `client: 'pg',`
+  `migrations: {`
+    `directory: './db/migrations'`
+  `},`
+  `seeds: {`
+    `directory: './db/seeds'`
+  `}`
+`};`
 
-const customConfig = {
-  development: {
-    connection: {
-      database: 'nc_news'
-    }
-  },
-  test: {
-    connection: {
-      database: 'nc_news_test'
-    }
-  },
-  production: {
-    connection: {
-      connectionString: DB_URL,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
-  },
-};
+`const customConfig = {`
+  `development: {`
+    `connection: {`
+      `database: 'nc_news'`
+    `}`
+  `},`
+  `test: {`
+    `connection: {`
+      `database: 'nc_news_test'`
+    `}`
+  `},`
+  `production: {`
+    `connection: {`
+      `connectionString: DB_URL,`
+      `ssl: {`
+        `rejectUnauthorized: false,`
+      `},`
+    `},`
+  `},`
+`};`
 
-module.exports = { ...customConfig[ENV], ...baseConfig };
-`
+`module.exports = { ...customConfig[ENV], ...baseConfig };`
+
 
 In order to set up and seed the local database run `npm run setup-dbs` followed by `npm run seed`.
 
