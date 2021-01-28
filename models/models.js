@@ -22,7 +22,6 @@ const fetchUserByName = (username) => {
 }
 
 const fetchArticleById = (id) => {
-    // console.log(id) //342
     return Promise.all([connection
         .select('*')
         .from('comments')
