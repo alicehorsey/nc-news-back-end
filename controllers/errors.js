@@ -4,7 +4,6 @@ const handlePSQLErrors = (err, req, res, next) => {
     if (badReqErrorCodes.includes(err.code)) {
         res.status(400).send({ msg: "Bad Request" })
     } else if (notFoundErrorCodes.includes(err.code)) {
-        // console.log(err.code)
         res.status(404).send({ msg: "Not Found" })
     } else {
         next(err)

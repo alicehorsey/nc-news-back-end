@@ -560,7 +560,6 @@ describe("testing the app", () => {
             return request(app)
                 .get("/api/comments")
                 .then(({ body }) => {
-                    // console.log(body.comments.length)//<---- length 18
                     return request(app)
                         .delete("/api/comments/1")
                         .then(() => {

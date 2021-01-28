@@ -15,15 +15,11 @@ const customConfig = {
   development: {
     connection: {
       database: 'nc_news'
-      // user,
-      // password
     }
   },
   test: {
     connection: {
       database: 'nc_news_test'
-      // user,
-      // password
     }
   },
   production: {
